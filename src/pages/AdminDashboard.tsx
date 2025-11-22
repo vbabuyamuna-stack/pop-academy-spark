@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Navbar } from '@/components/Navbar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -9,6 +8,7 @@ import { VideoManager } from '@/components/admin/VideoManager';
 import { LessonPlanManager } from '@/components/admin/LessonPlanManager';
 import { DPPManager } from '@/components/admin/DPPManager';
 import { GameManager } from '@/components/admin/GameManager';
+import Navbar from '@/components/Navbar';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ const AdminDashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen">
-        <Navbar />
+        {/* <Navbar /> */}
         <div className="container py-12 text-center">
           <p className="text-muted-foreground">Loading...</p>
         </div>
@@ -69,60 +69,63 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <>
       <Navbar />
-      
-      <div className="container py-12">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Shield className="h-6 w-6 text-primary" />
+      <div className="min-h-screen">
+        {/* <Navbar /> */}
+        
+        <div className="container py-12">
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Shield className="h-6 w-6 text-primary" />
+              </div>
+              <h1 className="font-display text-4xl font-bold">Admin Dashboard</h1>
             </div>
-            <h1 className="font-display text-4xl font-bold">Admin Dashboard</h1>
+            <p className="text-lg text-muted-foreground">
+              Manage courses, resources, videos, and games
+            </p>
           </div>
-          <p className="text-lg text-muted-foreground">
-            Manage courses, resources, videos, and games
-          </p>
+
+          <Tabs defaultValue="videos" className="space-y-8">
+            <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-4">
+              <TabsTrigger value="videos" className="gap-2">
+                <Video className="h-4 w-4" />
+                Videos
+              </TabsTrigger>
+              <TabsTrigger value="lessons" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Lesson Plans
+              </TabsTrigger>
+              <TabsTrigger value="dpp" className="gap-2">
+                <Clipboard className="h-4 w-4" />
+                DPP
+              </TabsTrigger>
+              <TabsTrigger value="games" className="gap-2">
+                <Gamepad2 className="h-4 w-4" />
+                Games
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="videos">
+              <VideoManager />
+            </TabsContent>
+
+            <TabsContent value="lessons">
+              <LessonPlanManager />
+            </TabsContent>
+
+            <TabsContent value="dpp">
+              <DPPManager />
+            </TabsContent>
+
+            <TabsContent value="games">
+              <GameManager />
+            </TabsContent>
+          </Tabs>
         </div>
-
-        <Tabs defaultValue="videos" className="space-y-8">
-          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-4">
-            <TabsTrigger value="videos" className="gap-2">
-              <Video className="h-4 w-4" />
-              Videos
-            </TabsTrigger>
-            <TabsTrigger value="lessons" className="gap-2">
-              <FileText className="h-4 w-4" />
-              Lesson Plans
-            </TabsTrigger>
-            <TabsTrigger value="dpp" className="gap-2">
-              <Clipboard className="h-4 w-4" />
-              DPP
-            </TabsTrigger>
-            <TabsTrigger value="games" className="gap-2">
-              <Gamepad2 className="h-4 w-4" />
-              Games
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="videos">
-            <VideoManager />
-          </TabsContent>
-
-          <TabsContent value="lessons">
-            <LessonPlanManager />
-          </TabsContent>
-
-          <TabsContent value="dpp">
-            <DPPManager />
-          </TabsContent>
-
-          <TabsContent value="games">
-            <GameManager />
-          </TabsContent>
-        </Tabs>
       </div>
-    </div>
+    </>
   );
 };
 

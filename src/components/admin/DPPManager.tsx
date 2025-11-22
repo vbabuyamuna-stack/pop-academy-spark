@@ -77,6 +77,7 @@ export const DPPManager = () => {
   };
 
   const handleDelete = async (id: string) => {
+  import Navbar from '@/components/Navbar';
     if (!confirm('Are you sure you want to delete this DPP?')) return;
 
     try {
@@ -198,6 +199,7 @@ export const DPPManager = () => {
                     <SelectContent>
                       <SelectItem value="easy">Easy</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
+        <Navbar />
                       <SelectItem value="hard">Hard</SelectItem>
                     </SelectContent>
                   </Select>

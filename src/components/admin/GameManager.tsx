@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Plus, Edit, Trash2, Gamepad2 } from 'lucide-react';
 import { courses } from '@/data/courses';
+import Navbar from '@/components/Navbar';
 
 export const GameManager = () => {
   const [games, setGames] = useState<any[]>([]);
@@ -117,6 +118,7 @@ export const GameManager = () => {
 
   return (
     <div className="space-y-6">
+      <Navbar />
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Game Management</h2>
         <Dialog open={dialogOpen} onOpenChange={(open) => {

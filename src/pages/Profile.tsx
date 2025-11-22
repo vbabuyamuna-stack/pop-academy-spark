@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Navbar } from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -81,7 +80,7 @@ const Profile = () => {
   if (loading) {
     return (
       <div className="min-h-screen">
-        <Navbar />
+        {/* <Navbar /> */}
         <div className="container py-12 text-center">
           <p className="text-muted-foreground">Loading...</p>
         </div>
@@ -105,15 +104,15 @@ const Profile = () => {
   
   return (
     <div className="min-h-screen">
-      <Navbar />
+      {/* <Navbar /> */}
       
       <div className="container py-12">
         {/* Profile Header */}
-        <div className="bg-gradient-primary rounded-2xl p-8 mb-12 text-white">
+        <div className="bg-gradient-primary rounded-[2.5rem] p-12 mb-12 text-white shadow-playful border-4 border-primary/20">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="flex items-center gap-6">
               <div className="h-24 w-24 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-4xl">
-                {isAdmin ? '👨‍💼' : '👨‍🎓'}
+                {isAdmin ? '\ud83d\udc68\u200d\ud83d\udcbc' : '\ud83d\udc68\u200d\ud83c\udf93'}
               </div>
               <div>
                 <div className="flex items-center gap-3 mb-2">
@@ -130,6 +129,7 @@ const Profile = () => {
                   <span className="flex items-center gap-1">
                     <Sparkles className="h-4 w-4" />
                     {stats.streak} day streak
+        <Navbar />
                   </span>
                   <span className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
@@ -151,7 +151,7 @@ const Profile = () => {
         </div>
         
         {/* Stats Grid */}
-        <div className="grid md:grid-cols-4 gap-6 mb-12">
+        <div className="grid md:grid-cols-4 gap-8 mb-12">
           {[
             { icon: BookOpen, label: 'Courses Enrolled', value: stats.coursesEnrolled, color: 'text-primary' },
             { icon: Award, label: 'Completed', value: stats.coursesCompleted, color: 'text-success' },

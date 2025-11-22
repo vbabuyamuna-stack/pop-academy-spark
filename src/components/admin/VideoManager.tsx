@@ -25,6 +25,7 @@ export const VideoManager = () => {
     duration_seconds: 0,
     category: 'lesson'
   });
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     loadVideos();
@@ -47,26 +48,36 @@ export const VideoManager = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
+      let videoUrl = formData.video_url;
+      if (file) {
+        // Upload file to Supabase Storage
+        const filePath = `${formData.course_id}/${Date.now()}_${file.name}`;
+        const { data, error: uploadError } = await supabase.storage.from('videos').upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabase.storage.from('videos').getPublicUrl(filePath);
+        videoUrl = urlData?.publicUrl;
+      }
+      const payload = { ...formData, video_url: videoUrl };
       if (editingVideo) {
         const { error } = await supabase
           .from('videos')
-          .update(formData)
+          .update(payload)
           .eq('id', editingVideo.id);
-
         if (error) throw error;
         toast.success('Video updated successfully!');
       } else {
         const { error } = await supabase
           .from('videos')
-          .insert([formData]);
-
+          .insert([payload]);
         if (error) throw error;
         toast.success('Video added successfully!');
       }
-
       resetForm();
+      setFile(null);
       loadVideos();
       setDialogOpen(false);
     } catch (error: any) {
@@ -169,12 +180,19 @@ export const VideoManager = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Video URL (YouTube/Vimeo)</Label>
+                <Label>Video File (optional)</Label>
+                <Input
+                  type="file"
+                  accept="video/*"
+                  onChange={e => setFile(e.target.files?.[0] || null)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Video URL (YouTube/Vimeo, optional)</Label>
                 <Input
                   value={formData.video_url}
                   onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
                   placeholder="https://youtube.com/watch?v=..."
-                  required
                 />
               </div>
 

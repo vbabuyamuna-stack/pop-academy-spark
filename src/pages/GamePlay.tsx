@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Navbar } from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
+import Navbar from '@/components/Navbar';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MemoryGame } from '@/components/games/MemoryGame';
@@ -38,8 +38,10 @@ const GamePlay = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <>
       <Navbar />
+    <div className="min-h-screen">
+      {/* <Navbar /> */}
       
       <div className="container py-12">
         <Link 
@@ -93,6 +95,7 @@ const GamePlay = () => {
         </Tabs>
       </div>
     </div>
+    </>
   );
 };
 

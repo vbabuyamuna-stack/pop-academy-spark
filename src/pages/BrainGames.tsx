@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Navbar } from '@/components/Navbar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +8,7 @@ import { ArrowLeft, Play } from 'lucide-react';
 import { MemoryGame } from '@/components/games/MemoryGame';
 import { PatternMatchGame } from '@/components/games/PatternMatchGame';
 import { MathSpeedGame } from '@/components/games/MathSpeedGame';
+import Navbar from '@/components/Navbar';
 
 const BrainGames = () => {
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
@@ -33,12 +33,11 @@ const BrainGames = () => {
     const game = brainGames.find(g => g.id === selectedGame);
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
+        {/* <Navbar /> */}
         <Navbar />
-        <div className="container py-8">
           <Button
             onClick={() => setSelectedGame(null)}
-            variant="outline"
-            className="mb-6 gap-2"
+            className="mb-6 gap-2 border border-input bg-background hover:bg-muted"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Games
@@ -52,13 +51,13 @@ const BrainGames = () => {
               {renderGame()}
             </CardContent>
           </Card>
-        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5">
+      {/* <Navbar /> */}
       <Navbar />
       
       <section className="py-12 bg-gradient-to-r from-primary via-secondary to-accent">
@@ -102,7 +101,6 @@ const BrainGames = () => {
                     <Button 
                       onClick={() => setSelectedGame(game.id)}
                       className="w-full gap-2 bg-gradient-primary"
-                      size="lg"
                     >
                       <Play className="h-4 w-4" />
                       Start Exercise
@@ -111,7 +109,6 @@ const BrainGames = () => {
                     <Button 
                       disabled
                       className="w-full"
-                      size="lg"
                       variant="outline"
                     >
                       Coming Soon
@@ -131,7 +128,7 @@ const BrainGames = () => {
             Administrators can upload custom images, audio files, and PDFs through the admin dashboard
           </p>
           <Link to="/admin">
-            <Button size="lg" className="gap-2 bg-gradient-primary">
+            <Button className="gap-2 bg-gradient-primary">
               Go to Admin Dashboard
             </Button>
           </Link>

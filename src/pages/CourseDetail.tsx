@@ -1,5 +1,4 @@
 import { useParams, Link } from 'react-router-dom';
-import { Navbar } from '@/components/Navbar';
 import { courses } from '@/data/courses';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +26,7 @@ const CourseDetail = () => {
   if (!course) {
     return (
       <div className="min-h-screen">
-        <Navbar />
+        {/* <Navbar /> */}
         <div className="container py-12 text-center">
           <h1 className="text-2xl font-bold mb-4">Course not found</h1>
           <Link to="/courses">
@@ -39,61 +38,57 @@ const CourseDetail = () => {
   }
   
   return (
-    <div className="min-h-screen">
-      <Navbar />
-      
+    <div className="min-h-screen bg-background text-foreground">
+      {/* <Navbar /> */}
       <div className="container py-12">
         {/* Back Button */}
-        <Link to="/courses" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-8 transition-colors">
-          <ArrowLeft className="h-4 w-4" />
+        <Link to="/courses" className="inline-flex items-center gap-2 text-base text-primary font-bold hover:text-accent mb-8 transition-colors rounded-full px-4 py-2 bg-background/80 border-2 border-primary/20 shadow-playful">
+          <ArrowLeft className="h-6 w-6 text-primary drop-shadow-lg" />
           Back to All Courses
         </Link>
-        
         {/* Course Header */}
-        <div className={cn("rounded-2xl p-8 md:p-12 mb-12 bg-gradient-to-r", course.color)}>
+        <div className={cn("rounded-[2.5rem] p-12 mb-12 shadow-playful border-4 border-primary/20", course.color)}>
           <div className="text-white">
             <div className="flex items-start justify-between mb-6">
-              <span className="text-7xl">{course.icon}</span>
-              <Badge variant="secondary">{course.level}</Badge>
+              <span className="inline-flex items-center justify-center rounded-full bg-background/80 shadow-lg border-4 border-primary/30" style={{ width: 80, height: 80 }}>
+                <span className="text-7xl drop-shadow-lg">{course.icon}</span>
+              </span>
+              <Badge variant="secondary" className="rounded-full px-4 py-2 text-base font-bold">{course.level}</Badge>
             </div>
-            
-            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 drop-shadow-lg">
               {course.title}
             </h1>
-            
-            <p className="text-lg text-white/90 mb-6 max-w-3xl">
+            <p className="text-lg text-white/90 mb-6 max-w-3xl font-medium">
               {course.fullDescription}
             </p>
-            
-            <div className="flex flex-wrap gap-6 text-sm">
+            <div className="flex flex-wrap gap-8 text-lg font-bold">
               <div className="flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                <span className="font-medium">{course.duration}</span>
+                <Clock className="h-6 w-6 text-accent drop-shadow-lg" />
+                <span>{course.duration}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
-                <span className="font-medium">{course.exercises.length} Exercises</span>
+                <Target className="h-6 w-6 text-secondary drop-shadow-lg" />
+                <span>{course.exercises.length} Exercises</span>
               </div>
               <div className="flex items-center gap-2">
-                <Video className="h-5 w-5" />
-                <span className="font-medium">{course.videos.length} Videos</span>
+                <Video className="h-6 w-6 text-primary drop-shadow-lg" />
+                <span>{course.videos.length} Videos</span>
               </div>
               <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                <span className="font-medium">{course.manuals.length + course.resources.length} Resources</span>
+                <FileText className="h-6 w-6 text-yellow drop-shadow-lg" />
+                <span>{course.manuals.length + course.resources.length} Resources</span>
               </div>
             </div>
-            
-            <div className="mt-8 flex flex-wrap gap-4">
+            <div className="mt-8 flex flex-wrap gap-6">
               <Link to={`/courses/${courseId}/games`}>
-                <Button size="lg" variant="secondary" className="gap-2">
-                  <Play className="h-5 w-5" />
+                <Button className="gap-2 rounded-full px-8 py-3 font-bold">
+                  <Play className="h-6 w-6" />
                   Play Games
                 </Button>
               </Link>
               <Link to={`/courses/${courseId}/resources`}>
-                <Button size="lg" variant="outline" className="gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20">
-                  <FileText className="h-5 w-5" />
+                <Button className="gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20 rounded-full px-8 py-3 font-bold">
+                  <FileText className="h-6 w-6" />
                   View Resources
                 </Button>
               </Link>
@@ -146,7 +141,7 @@ const CourseDetail = () => {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-muted-foreground mb-4">{exercise.description}</p>
-                    <Button variant="outline" size="sm" className="w-full gap-2">
+                    <Button className="w-full gap-2">
                       <Play className="h-4 w-4" />
                       Start Exercise
                     </Button>
@@ -174,7 +169,7 @@ const CourseDetail = () => {
                         <p className="text-sm text-muted-foreground mb-4">{video.description}</p>
                       )}
                       <a href={video.url} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="w-full gap-2">
+                        <Button className="w-full gap-2">
                           <ExternalLink className="h-4 w-4" />
                           Watch Video
                         </Button>
@@ -211,7 +206,7 @@ const CourseDetail = () => {
                         <p className="text-sm text-muted-foreground mb-4">{resource.description}</p>
                       )}
                       <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="w-full gap-2">
+                        <Button className="w-full gap-2">
                           <ExternalLink className="h-4 w-4" />
                           Open Resource
                         </Button>
@@ -248,7 +243,7 @@ const CourseDetail = () => {
                         <p className="text-sm text-muted-foreground mb-4">{manual.description}</p>
                       )}
                       <a href={manual.url} target="_blank" rel="noopener noreferrer">
-                        <Button variant="outline" size="sm" className="w-full gap-2">
+                        <Button className="w-full gap-2">
                           <Download className="h-4 w-4" />
                           Download Manual
                         </Button>

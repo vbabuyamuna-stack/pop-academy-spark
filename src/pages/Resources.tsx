@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Navbar } from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { PDFViewer } from '@/components/PDFViewer';
@@ -12,8 +11,80 @@ import { toast } from 'sonner';
 const Resources = () => {
   const { courseId } = useParams<{ courseId: string }>();
   const [lessonPlans, setLessonPlans] = useState<any[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [dpps, setDpps] = useState<any[]>([]);
   const [videos, setVideos] = useState<any[]>([]);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadVideoError, setUploadVideoError] = useState<string | null>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
+    // Delete Video
+    const handleDeleteVideo = async (videoId: string, videoUrl: string) => {
+      try {
+        setUploadingVideo(true);
+        // Remove from storage
+        const filePath = videoUrl.split('/storage/v1/object/public/')[1];
+        if (filePath) {
+          await supabase.storage.from('videos').remove([filePath]);
+        }
+        // Remove from DB
+        const { error } = await supabase.from('videos').delete().eq('id', videoId);
+        if (error) throw error;
+        toast.success('Video deleted');
+        setVideos((prev) => prev.filter((v) => v.id !== videoId));
+      } catch (err: any) {
+        toast.error('Delete failed: ' + err.message);
+      } finally {
+        setUploadingVideo(false);
+      }
+    };
+
+    // Upload Video
+    const handleUploadVideo = async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setUploadingVideo(true);
+      setUploadVideoError(null);
+      const file = videoInputRef.current?.files?.[0];
+      const title = (e.currentTarget.elements.namedItem('videoTitle') as HTMLInputElement)?.value;
+      if (!file || !title) {
+        setUploadVideoError('Please select a video and enter a title.');
+        setUploadingVideo(false);
+        return;
+      }
+      try {
+        // Get current user
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('User not authenticated');
+        // Upload to Supabase Storage
+        const filePath = `${courseId}/${user.id}/${Date.now()}_${file.name}`;
+        const { data, error: uploadError } = await supabase.storage.from('videos').upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false,
+        });
+        if (uploadError) throw uploadError;
+        // Get public URL
+        const { data: urlData } = supabase.storage.from('videos').getPublicUrl(filePath);
+        const videoUrl = urlData?.publicUrl;
+        // Insert into DB
+        const { error: dbError, data: dbData } = await supabase.from('videos').insert({
+          course_id: courseId,
+          video_url: videoUrl,
+          title,
+          user_id: user.id,
+        }).select();
+        if (dbError) throw dbError;
+        toast.success('Video uploaded!');
+        setVideos((prev) => [...prev, dbData[0]]);
+        if (videoInputRef.current) videoInputRef.current.value = '';
+        (e.currentTarget.elements.namedItem('videoTitle') as HTMLInputElement).value = '';
+      } catch (err: any) {
+        setUploadVideoError(err.message);
+        toast.error('Upload failed: ' + err.message);
+      } finally {
+        setUploadingVideo(false);
+      }
+    };
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,10 +115,76 @@ const Resources = () => {
     }
   };
 
+  // Delete PDF
+  const handleDeletePDF = async (planId: string, pdfUrl: string) => {
+    try {
+      setUploading(true);
+      // Remove from storage
+      const filePath = pdfUrl.split('/storage/v1/object/public/')[1];
+      if (filePath) {
+        await supabase.storage.from('pdfs').remove([filePath]);
+      }
+      // Remove from DB
+      const { error } = await supabase.from('lesson_plans').delete().eq('id', planId);
+      if (error) throw error;
+      toast.success('PDF deleted');
+      setLessonPlans((prev) => prev.filter((p) => p.id !== planId));
+    } catch (err: any) {
+      toast.error('Delete failed: ' + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Upload PDF
+  const handleUploadPDF = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setUploading(true);
+    setUploadError(null);
+    const file = fileInputRef.current?.files?.[0];
+    const title = (e.currentTarget.elements.namedItem('title') as HTMLInputElement)?.value;
+    if (!file || !title) {
+      setUploadError('Please select a PDF and enter a title.');
+      setUploading(false);
+      return;
+    }
+    try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('User not authenticated');
+      // Upload to Supabase Storage
+      const filePath = `${courseId}/${user.id}/${Date.now()}_${file.name}`;
+      const { data, error: uploadError } = await supabase.storage.from('pdfs').upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false,
+      });
+      if (uploadError) throw uploadError;
+      // Get public URL
+      const { data: urlData } = supabase.storage.from('pdfs').getPublicUrl(filePath);
+      const pdfUrl = urlData?.publicUrl;
+      // Insert into DB
+      const { error: dbError, data: dbData } = await supabase.from('lesson_plans').insert({
+        course_id: courseId,
+        pdf_url: pdfUrl,
+        title,
+        user_id: user.id,
+      }).select();
+      if (dbError) throw dbError;
+      toast.success('PDF uploaded!');
+      setLessonPlans((prev) => [...prev, dbData[0]]);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      (e.currentTarget.elements.namedItem('title') as HTMLInputElement).value = '';
+    } catch (err: any) {
+      setUploadError(err.message);
+      toast.error('Upload failed: ' + err.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen">
-      <Navbar />
-      
+  
       <div className="container py-12">
         <Link 
           to={`/courses/${courseId}`}
@@ -58,12 +195,55 @@ const Resources = () => {
         </Link>
 
         <div className="mb-8">
-          <h1 className="font-display text-4xl font-bold mb-2">
-            Course Resources
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Access lesson plans, practice problems, and video tutorials
-          </p>
+          <h1 className="font-display text-4xl font-bold mb-2">Course Resources</h1>
+          <p className="text-lg text-muted-foreground">Access lesson plans, practice problems, and video tutorials</p>
+          {/* PDF Upload Form */}
+          <form onSubmit={handleUploadPDF} className="mt-6 flex flex-col md:flex-row gap-4 items-center bg-muted/50 p-4 rounded-xl shadow-playful">
+            <input
+              type="text"
+              name="title"
+              placeholder="PDF Title"
+              className="border rounded-full px-4 py-2 text-lg font-medium"
+              required
+              disabled={uploading}
+            />
+            <input
+              type="file"
+              accept="application/pdf"
+              ref={fileInputRef}
+              className="border rounded-full px-4 py-2 text-lg font-medium"
+              required
+              disabled={uploading}
+            />
+            <Button type="submit" className="rounded-full px-6 py-2 font-bold" disabled={uploading}>
+              {uploading ? 'Uploading...' : 'Upload PDF'}
+            </Button>
+            {uploadError && <span className="text-destructive font-bold ml-4">{uploadError}</span>}
+          </form>
+
+          {/* Video Upload Form */}
+          <form onSubmit={handleUploadVideo} className="mt-6 flex flex-col md:flex-row gap-4 items-center bg-muted/50 p-4 rounded-xl shadow-playful">
+            <input
+              type="text"
+              name="videoTitle"
+              placeholder="Video Title"
+              className="border rounded-full px-4 py-2 text-lg font-medium"
+              required
+              disabled={uploadingVideo}
+            />
+            <input
+              type="file"
+              accept="video/*"
+              ref={videoInputRef}
+              className="border rounded-full px-4 py-2 text-lg font-medium"
+              required
+              disabled={uploadingVideo}
+            />
+            <Button type="submit" className="rounded-full px-6 py-2 font-bold" disabled={uploadingVideo}>
+              {uploadingVideo ? 'Uploading...' : 'Upload Video'}
+            </Button>
+            {uploadVideoError && <span className="text-destructive font-bold ml-4">{uploadVideoError}</span>}
+          </form>
         </div>
 
         <Tabs defaultValue="lessons" className="space-y-8">
@@ -88,13 +268,23 @@ const Resources = () => {
             ) : lessonPlans.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {lessonPlans.map((plan) => (
-                  <PDFViewer
-                    key={plan.id}
-                    title={plan.title}
-                    url={plan.pdf_url}
-                    description={plan.description}
-                    type="lesson plan"
-                  />
+                  <div key={plan.id} className="relative">
+                    <PDFViewer
+                      title={plan.title}
+                      url={plan.pdf_url}
+                      description={plan.description}
+                      type="lesson plan"
+                    />
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2 z-10 rounded-full"
+                      onClick={() => handleDeletePDF(plan.id, plan.pdf_url)}
+                      disabled={uploading}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -132,15 +322,25 @@ const Resources = () => {
             ) : videos.length > 0 ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {videos.map((video) => (
-                  <VideoPlayer
-                    key={video.id}
-                    title={video.title}
-                    url={video.video_url}
-                    description={video.description}
-                    thumbnail={video.thumbnail_url}
-                    duration={video.duration_seconds}
-                    category={video.category}
-                  />
+                  <div key={video.id} className="relative">
+                    <VideoPlayer
+                      title={video.title}
+                      url={video.video_url}
+                      description={video.description}
+                      thumbnail={video.thumbnail_url}
+                      duration={video.duration_seconds}
+                      category={video.category}
+                    />
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2 z-10 rounded-full"
+                      onClick={() => handleDeleteVideo(video.id, video.video_url)}
+                      disabled={uploadingVideo}
+                    >
+                      Delete
+                    </Button>
+                  </div>
                 ))}
               </div>
             ) : (

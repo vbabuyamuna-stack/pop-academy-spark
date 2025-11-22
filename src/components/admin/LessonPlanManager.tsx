@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,6 +25,7 @@ export const LessonPlanManager = () => {
     week_number: 0,
     day_number: 0
   });
+  const [file, setFile] = useState<File | null>(null);
 
   useEffect(() => {
     loadLessonPlans();
@@ -46,26 +48,55 @@ export const LessonPlanManager = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
+      let pdfUrl = formData.pdf_url;
+       if (file) {
+         // Ensure bucket exists before upload
+         const bucketName = 'pdfs';
+         try {
+           const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
+           if (bucketError) throw bucketError;
+           const bucketExists = buckets?.some((b: any) => b.name === bucketName);
+           if (!bucketExists) {
+             const { error: createError } = await supabase.storage.createBucket(bucketName, { public: true });
+             if (createError) throw createError;
+           }
+         } catch (bucketSetupError) {
+           toast.error('Storage bucket setup failed: ' + (bucketSetupError?.message || bucketSetupError));
+           setLoading(false);
+           return;
+         }
+         // Upload file to Supabase Storage
+         const filePath = `${formData.course_id}/${Date.now()}_${file.name}`;
+         const { data, error: uploadError } = await supabase.storage.from(bucketName).upload(filePath, file, {
+           cacheControl: '3600',
+           upsert: false,
+         });
+         if (uploadError) {
+           toast.error('Upload failed: ' + uploadError.message);
+           setLoading(false);
+           return;
+         }
+         const { data: urlData } = supabase.storage.from(bucketName).getPublicUrl(filePath);
+         pdfUrl = urlData?.publicUrl;
+       }
+      const payload = { ...formData, pdf_url: pdfUrl };
       if (editingPlan) {
         const { error } = await supabase
           .from('lesson_plans')
-          .update(formData)
+          .update(payload)
           .eq('id', editingPlan.id);
-
         if (error) throw error;
         toast.success('Lesson plan updated!');
       } else {
         const { error } = await supabase
           .from('lesson_plans')
-          .insert([formData]);
-
+          .insert([payload]);
         if (error) throw error;
         toast.success('Lesson plan added!');
       }
-
       resetForm();
+      setFile(null);
       loadLessonPlans();
       setDialogOpen(false);
     } catch (error: any) {
@@ -118,6 +149,8 @@ export const LessonPlanManager = () => {
   };
 
   return (
+    <>
+      <Navbar />
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Lesson Plan Management</h2>
@@ -166,12 +199,19 @@ export const LessonPlanManager = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>PDF URL</Label>
+                <Label>PDF File (optional)</Label>
+                <Input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={e => setFile(e.target.files?.[0] || null)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>PDF URL (optional)</Label>
                 <Input
                   value={formData.pdf_url}
                   onChange={(e) => setFormData({ ...formData, pdf_url: e.target.value })}
                   placeholder="https://..."
-                  required
                 />
               </div>
 
@@ -253,5 +293,6 @@ export const LessonPlanManager = () => {
         </div>
       )}
     </div>
+    </>
   );
 };
