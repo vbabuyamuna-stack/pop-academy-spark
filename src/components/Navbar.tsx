@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Home, LogIn, User, Shield } from 'lucide-react';
+import { BookOpen, Home, LogIn, User, Shield, Brain } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import logo from '@/assets/pop-academy-logo.png';
@@ -51,7 +51,7 @@ export const Navbar = () => {
           <img 
             src={logo} 
             alt="Pop Academy" 
-            className="h-14 w-14 transition-transform group-hover:scale-110 group-hover:rotate-12 animate-pulse-glow" 
+            className="h-14 w-14 transition-transform group-hover:scale-110" 
           />
           <span className="font-display text-2xl font-bold bg-gradient-primary bg-clip-text text-transparent">
             Pop Academy
@@ -79,6 +79,17 @@ export const Navbar = () => {
           >
             <BookOpen className="h-5 w-5" />
             <span className="hidden sm:inline">Courses</span>
+          </Link>
+
+          <Link
+            to="/brain-games"
+            className={cn(
+              "flex items-center gap-2 text-sm font-bold transition-all hover:text-primary hover:scale-110",
+              isActive('/brain-games') ? 'text-primary scale-110' : 'text-muted-foreground'
+            )}
+          >
+            <Brain className="h-5 w-5" />
+            <span className="hidden sm:inline">Brain Games</span>
           </Link>
 
           {isAdmin && (
