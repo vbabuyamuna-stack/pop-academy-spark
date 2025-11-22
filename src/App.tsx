@@ -12,6 +12,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import GamePlay from "./pages/GamePlay";
 import Resources from "./pages/Resources";
+import BrainGames from "./pages/BrainGames";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/courses/:courseId" element={<CourseDetail />} />
           <Route path="/courses/:courseId/games" element={<GamePlay />} />
           <Route path="/courses/:courseId/resources" element={<Resources />} />
+          <Route path="/brain-games" element={<BrainGames />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/admin" element={<AdminDashboard />} />

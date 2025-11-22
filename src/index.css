@@ -18,20 +18,20 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 20%;
 
-    /* Warm Orange Primary - #E2852E */
-    --primary: 29 76% 53%;
+    /* Bright Orange Primary */
+    --primary: 25 100% 60%;
     --primary-foreground: 0 0% 100%;
-    --primary-light: 29 76% 68%;
-    --primary-dark: 29 76% 38%;
+    --primary-light: 25 100% 75%;
+    --primary-dark: 25 100% 45%;
 
-    /* Sky Blue Secondary - #AEDEFC */
-    --secondary: 203 93% 84%;
+    /* Bright Cyan Secondary */
+    --secondary: 190 100% 65%;
     --secondary-foreground: 220 20% 20%;
-    --secondary-light: 203 93% 92%;
-    --secondary-dark: 203 93% 70%;
+    --secondary-light: 190 100% 80%;
+    --secondary-dark: 190 100% 50%;
 
-    /* Golden Yellow Accent - #F5C857 */
-    --accent: 43 89% 65%;
+    /* Bright Yellow Accent */
+    --accent: 48 100% 60%;
     --accent-foreground: 220 20% 20%;
 
     /* Light Pink Muted - #FDEDED */
@@ -46,15 +46,15 @@ All colors MUST be HSL.
     --destructive: 336 89% 72%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Additional Custom Colors */
-    --blue: 194 69% 81%;
-    --pink: 336 89% 72%;
-    --orange: 29 76% 53%;
-    --green: 130 100% 96%;
-    --purple: 280 70% 65%;
-    --yellow: 51 100% 78%;
-    --gold: 43 89% 65%;
-    --sky: 203 93% 84%;
+    /* Additional Bright Colors */
+    --blue: 210 100% 65%;
+    --pink: 330 100% 70%;
+    --orange: 25 100% 60%;
+    --green: 140 100% 50%;
+    --purple: 270 100% 65%;
+    --yellow: 48 100% 60%;
+    --gold: 45 100% 55%;
+    --sky: 190 100% 65%;
 
     --border: 203 30% 90%;
     --input: 203 30% 95%;
@@ -62,12 +62,12 @@ All colors MUST be HSL.
 
     --radius: 1rem;
     
-    /* Vibrant Gradients with Custom Colors */
-    --gradient-primary: linear-gradient(135deg, hsl(29 76% 53%), hsl(43 89% 65%));
-    --gradient-secondary: linear-gradient(135deg, hsl(203 93% 84%), hsl(194 69% 81%));
-    --gradient-hero: linear-gradient(135deg, hsl(29 76% 53%) 0%, hsl(43 89% 65%) 25%, hsl(336 89% 72%) 50%, hsl(203 93% 84%) 75%, hsl(130 100% 96%) 100%);
-    --gradient-fun: linear-gradient(135deg, hsl(336 89% 72%), hsl(203 93% 84%), hsl(51 100% 78%));
-    --gradient-sunshine: linear-gradient(135deg, hsl(51 100% 78%), hsl(43 89% 65%), hsl(29 76% 53%));
+    /* Bright Vibrant Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(25 100% 60%), hsl(48 100% 60%));
+    --gradient-secondary: linear-gradient(135deg, hsl(190 100% 65%), hsl(210 100% 65%));
+    --gradient-hero: linear-gradient(135deg, hsl(25 100% 60%) 0%, hsl(48 100% 60%) 25%, hsl(330 100% 70%) 50%, hsl(190 100% 65%) 75%, hsl(140 100% 50%) 100%);
+    --gradient-fun: linear-gradient(135deg, hsl(330 100% 70%), hsl(190 100% 65%), hsl(48 100% 60%));
+    --gradient-sunshine: linear-gradient(135deg, hsl(48 100% 60%), hsl(45 100% 55%), hsl(25 100% 60%));
     
     --shadow-sm: 0 4px 12px hsl(29 76% 53% / 0.15);
     --shadow-md: 0 8px 24px hsl(29 76% 53% / 0.2);
